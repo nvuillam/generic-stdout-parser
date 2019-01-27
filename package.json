@@ -1,7 +1,7 @@
 {
   "name": "generic-stdout-parser",
-  "version": "1.0.0",
-  "description": "Parse any type of stdout into JSON or XML\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dcommand line/shell stdout into JSON or XML",
+  "version": "1.0.1",
+  "description": "Parse any type of command line/cmd/shell stdout into Javascrpt Object, JSON or XML",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
