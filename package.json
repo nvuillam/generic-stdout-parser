@@ -1,0 +1,37 @@
+{
+  "name": "generic-stdout-parser",
+  "version": "1.0.0",
+  "description": "Parse any type of stdout into JSON or XML\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dcommand line/shell stdout into JSON or XML",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nvuillam/generic-stdout-parser.git"
+  },
+  "keywords": [
+    "parsing",
+    "json",
+    "output",
+    "stdout",
+    "shell",
+    "cmd",
+    "command",
+    "line",
+    "node",
+    "xml",
+    "parse"
+  ],
+  "author": "Nicolas Vuillamy",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/nvuillam/generic-stdout-parser/issues"
+  },
+  "homepage": "https://github.com/nvuillam/generic-stdout-parser#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "xml2js": "^0.4.19"
+  }
+}
