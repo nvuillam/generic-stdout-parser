@@ -1,0 +1,1 @@
+generic-stdout-parser
