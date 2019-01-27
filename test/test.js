@@ -65,11 +65,17 @@ h264_i_frame_period (int)    : min=0 max=2147483647 step=1 default=60 value=60
                                     .find(x => x.name === 'value')
                                     .value === '50',
                                     'Unable to find Camera Controls auto_exposure.max with value 3 in '+JSON.stringify(parseRes))
-                                    console.log(JSON.stringify(parseRes,null,2))
 
     });
 
-
+    it('should return a parsed XML from shell log', function() {
+        const stdoutlog = `  PID TTY          TIME CMD
+        23856 pts/1    00:00:00 ps
+        31475 pts/1    00:00:00 bash
+        ` ;
+        const parseRes = new StdOutParser(stdoutlog,{'inputFormat': 'shell'}).parse()
+        chai.assert(parseRes.result[0]['TTY'] === '23856 pts/1','Unable to find TTY = N23856 pts/1 in '+parseRes)
+    });
 
   });
 });

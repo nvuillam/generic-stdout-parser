@@ -12,12 +12,13 @@ Soooo fed up of manually creating parsers for cmd/sh/bash command line output lo
 
 When there are useless lines added to a stdout json or xml shell output, the parser manages to detect and ignore them.
 
-To avoid duplication with tables parsing of package [node-shell-parser](https://www.npmjs.com/package/node-shell-parser), it is possible to use 'node-shell-parser' as inputFormat
+To avoid duplication with linux tables parsing of package [node-shell-parser](https://www.npmjs.com/package/node-shell-parser), it is possible to use 'node-shell-parser' as inputFormat
 
 Available input formats are
 - json
 - xml
 - raw_structure_datatype_props
+- shell
 
 Available output formats are 
 - javascript object
@@ -39,344 +40,81 @@ Available output formats are
 
 # Examples 
 
-### Input raw_structure_datatype_props:
-```
-User Controls
+### Json to JS Object
 
-                     brightness (int)    : min=0 max=100 step=1 default=50 value=50 flags=slider
-                       contrast (int)    : min=-100 max=100 step=1 default=0 value=-10 flags=slider
-                     saturation (int)    : min=-100 max=100 step=1 default=0 value=0 flags=slider
-                    red_balance (int)    : min=1 max=7999 step=1 default=1000 value=1000 flags=slider
-                   blue_balance (int)    : min=1 max=7999 step=1 default=1000 value=1000 flags=slider
-                horizontal_flip (bool)   : default=0 value=0
+```
+        const StdOutParser = require('generic-stdout-parser')
+        const stdoutlog = ['{ "lelama": "NUL" }']
+        const parseRes = new StdOutParser(stdoutlog).parse()
+        assert(parseRes.result.lelama === "NUL",'lelama property not found in '+JSON.stringify(parseRes))
+```
+
+### JSON to JS Object with crappy extra lines:
+
+```
+        const StdOutParser = require('generic-stdout-parser')
+        const stdoutlog = ['blablablabla','   { "lelama": "NUL" }']
+        const parseRes = new StdOutParser(stdoutlog).parse()
+        assert(parseRes.result.lelama === "NUL",'lelama property not found in '+JSON.stringify(parseRes))
+```
+
+### XML to JS Object
+
+```
+        const StdOutParser = require('generic-stdout-parser')
+        const stdoutlog = '<lelama>NUL</lelama>'
+        const parseRes = new StdOutParser(stdoutlog).parse()
+        assert(parseRes.result.lelama === "NUL",'lelama property not found in '+JSON.stringify(parseRes))
+```
+
+### JSON to XML:
+
+```
+        const StdOutParser = require('generic-stdout-parser')
+        const stdoutlog = ['{ "lelama": "NUL" }']
+        const parseRes = new StdOutParser(stdoutlog,{'resultFormat': 'xml'}).parse()
+        console.log(parseRes)
+```
+
+### raw_structure_datatype_props (v4l2-ctl --list-ctrls) to JS Object:
+
+```
+        const StdOutParser = require('generic-stdout-parser')
+        const stdoutlog = `User Controls
+
+        brightness (int)    : min=0 max=100 step=1 default=50 value=50 flags=slider
+          contrast (int)    : min=-100 max=100 step=1 default=0 value=-10 flags=slider
+        saturation (int)    : min=-100 max=100 step=1 default=0 value=0 flags=slider
+       red_balance (int)    : min=1 max=7999 step=1 default=1000 value=1000 flags=slider
+      blue_balance (int)    : min=1 max=7999 step=1 default=1000 value=1000 flags=slider
+   horizontal_flip (bool)   : default=0 value=0
 
 Codec Controls
 
-             video_bitrate_mode (menu)   : min=0 max=1 default=0 value=0 flags=update
-                  video_bitrate (int)    : min=25000 max=25000000 step=25000 default=10000000 value=10000000
-         repeat_sequence_header (bool)   : default=0 value=0
-            h264_i_frame_period (int)    : min=0 max=2147483647 step=1 default=60 value=60
-                     h264_level (menu)   : min=0 max=11 default=11 value=11
-                   h264_profile (menu)   : min=0 max=4 default=4 value=4
+video_bitrate_mode (menu)   : min=0 max=1 default=0 value=0 flags=update
+     video_bitrate (int)    : min=25000 max=25000000 step=25000 default=10000000 value=10000000
+repeat_sequence_header (bool)   : default=0 value=0
+h264_i_frame_period (int)    : min=0 max=2147483647 step=1 default=60 value=60
+        h264_level (menu)   : min=0 max=11 default=11 value=11
+      h264_profile (menu)   : min=0 max=4 default=4 value=4` ;
+        const parseRes = new StdOutParser(stdoutlog,{inputFormat: 'raw_structure_datatype_props'}).parse()
+        assert(parseRes.result.find(x => x.name === 'User Controls').properties
+                                    .find(x => x.name === 'brightness').properties
+                                    .find(x => x.name === 'value')
+                                    .value === '50',
+                                    'Unable to find Camera Controls auto_exposure.max with value 3 in '+JSON.stringify(parseRes))
 ```
 
-Output:
+### linux shell output to JS Object:
+
 ```
-{
-  "inputFormat": "raw_structure_datatype_props",
-  "result": [
-    {
-      "name": "User Controls",
-      "properties": [
-        {
-          "name": "brightness",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "0"
-            },
-            {
-              "name": "max",
-              "value": "100"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "50"
-            },
-            {
-              "name": "value",
-              "value": "50"
-            },
-            {
-              "name": "flags",
-              "value": "slider"
-            }
-          ]
-        },
-        {
-          "name": "contrast",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "-100"
-            },
-            {
-              "name": "max",
-              "value": "100"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "0"
-            },
-            {
-              "name": "value",
-              "value": "-10"
-            },
-            {
-              "name": "flags",
-              "value": "slider"
-            }
-          ]
-        },
-        {
-          "name": "saturation",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "-100"
-            },
-            {
-              "name": "max",
-              "value": "100"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "0"
-            },
-            {
-              "name": "value",
-              "value": "0"
-            },
-            {
-              "name": "flags",
-              "value": "slider"
-            }
-          ]
-        },
-        {
-          "name": "red_balance",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "1"
-            },
-            {
-              "name": "max",
-              "value": "7999"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "1000"
-            },
-            {
-              "name": "value",
-              "value": "1000"
-            },
-            {
-              "name": "flags",
-              "value": "slider"
-            }
-          ]
-        },
-        {
-          "name": "blue_balance",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "1"
-            },
-            {
-              "name": "max",
-              "value": "7999"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "1000"
-            },
-            {
-              "name": "value",
-              "value": "1000"
-            },
-            {
-              "name": "flags",
-              "value": "slider"
-            }
-          ]
-        },
-        {
-          "name": "horizontal_flip",
-          "dataType": "bool",
-          "properties": [
-            {
-              "name": "default",
-              "value": "0"
-            },
-            {
-              "name": "value",
-              "value": "0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Codec Controls",
-      "properties": [
-        {
-          "name": "video_bitrate_mode",
-          "dataType": "menu",
-          "properties": [
-            {
-              "name": "min",
-              "value": "0"
-            },
-            {
-              "name": "max",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "0"
-            },
-            {
-              "name": "value",
-              "value": "0"
-            },
-            {
-              "name": "flags",
-              "value": "update"
-            }
-          ]
-        },
-        {
-          "name": "video_bitrate",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "25000"
-            },
-            {
-              "name": "max",
-              "value": "25000000"
-            },
-            {
-              "name": "step",
-              "value": "25000"
-            },
-            {
-              "name": "default",
-              "value": "10000000"
-            },
-            {
-              "name": "value",
-              "value": "10000000"
-            }
-          ]
-        },
-        {
-          "name": "repeat_sequence_header",
-          "dataType": "bool",
-          "properties": [
-            {
-              "name": "default",
-              "value": "0"
-            },
-            {
-              "name": "value",
-              "value": "0"
-            }
-          ]
-        },
-        {
-          "name": "h264_i_frame_period",
-          "dataType": "int",
-          "properties": [
-            {
-              "name": "min",
-              "value": "0"
-            },
-            {
-              "name": "max",
-              "value": "2147483647"
-            },
-            {
-              "name": "step",
-              "value": "1"
-            },
-            {
-              "name": "default",
-              "value": "60"
-            },
-            {
-              "name": "value",
-              "value": "60"
-            }
-          ]
-        },
-        {
-          "name": "h264_level",
-          "dataType": "menu",
-          "properties": [
-            {
-              "name": "min",
-              "value": "0"
-            },
-            {
-              "name": "max",
-              "value": "11"
-            },
-            {
-              "name": "default",
-              "value": "11"
-            },
-            {
-              "name": "value",
-              "value": "11"
-            }
-          ]
-        },
-        {
-          "name": "h264_profile",
-          "dataType": "menu",
-          "properties": [
-            {
-              "name": "min",
-              "value": "0"
-            },
-            {
-              "name": "max",
-              "value": "4"
-            },
-            {
-              "name": "default",
-              "value": "4"
-            },
-            {
-              "name": "value",
-              "value": "4"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+        const StdOutParser = require('generic-stdout-parser')
+const stdoutlog = `  PID TTY          TIME CMD
+        23856 pts/1    00:00:00 ps
+        31475 pts/1    00:00:00 bash
+        ` ;
+        const parseRes = new StdOutParser(stdoutlog,{'inputFormat': 'shell'}).parse()
+        assert(parseRes.result[0]['TTY'] === '23856 pts/1','Unable to find TTY = N23856 pts/1 in '+parseRes)
 ```
 
 Don't hesitate to contribute with GitHub pull requests !

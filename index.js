@@ -5,7 +5,7 @@ const xml2js = require('xml2js');
 const chai = require('chai'); 
 
 // Constants
-const ALLOWED_FORMAT_LIST = ['json','xml','raw_structure_datatype_props'];
+const ALLOWED_FORMAT_LIST = ['json','xml','raw_structure_datatype_props','shell'];
 
 // Main package class
 class StdOutParser {
@@ -142,6 +142,11 @@ class StdOutParser {
             // Set last category
             if (currentCategory)
                 this.dataResult.push(currentCategory)
+        }
+        // shell
+        else if (this.inputFormat === 'shell') {
+            var shellParser = require('node-shell-parser')
+            this.dataResult = shellParser(this.logContentFrmt.join('\n'))
         }
     }
 
