@@ -97,6 +97,7 @@ repeat_sequence_header (bool)   : default=0 value=0
 h264_i_frame_period (int)    : min=0 max=2147483647 step=1 default=60 value=60
         h264_level (menu)   : min=0 max=11 default=11 value=11
       h264_profile (menu)   : min=0 max=4 default=4 value=4` ;
+      
         const parseRes = new StdOutParser(stdoutlog,{inputFormat: 'raw_structure_datatype_props'}).parse()
         assert(parseRes.result.find(x => x.name === 'User Controls').properties
                                     .find(x => x.name === 'brightness').properties
